@@ -24,6 +24,37 @@ module ForecastRuby
 			windDir[ d.floor ]
 		end
 
+		def get_weather_icon(option)
+			# uses climacons
+			# could be one of the following. End with a default icon incase the API adds new values
+			# clear-day, clear-night, rain, snow, sleet, wind, fog, cloudy, partly-cloudy-day, or partly-cloudy-night
+			result = "climacon "
+			case option
+				when 'clear-day'
+					result << "sun"
+				when 'clear-night'
+					result << "moon"
+				when 'rain'
+					result << "rain"
+				when 'snow'
+					result << "snow"
+				when 'sleet'
+					result << "sleet"
+				when 'wind'
+					result << "wind"
+				when 'fog'
+					result << "fog"
+				when 'cloudy'
+					result << "cloud"
+				when 'partly-cloudy-day'
+					result << "cloud sun"
+				when 'partly-cloudy-night'
+					result << "cloud moon"
+				else
+					result << "moon new"
+			end
+		end
+
 
 	end
 end

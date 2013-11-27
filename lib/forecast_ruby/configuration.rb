@@ -2,7 +2,9 @@ module ForecastRuby
 	module Configuration
 		attr_writer :api_endpoint
 		attr_writer :api_key
-		attr_writer :units
+		attr_writer :cache_expire_time
+
+		attr_accessor :option_params
 
 		def configure
 			yield self
@@ -16,8 +18,8 @@ module ForecastRuby
 			@api_key
 		end
 
-		def units
-			@units ||= "uk"
+		def cache_expire_time
+			@cache_expire_time || 14400 #in seconds = 4 hours
 		end
 	end
 end

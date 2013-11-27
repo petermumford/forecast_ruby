@@ -8,23 +8,52 @@ module ForecastRuby
 	extend Helpers
 
   class << self
-  	def forecast(lat, lng)
+  	def request_forecast(lat, lng)
   		@latitude = lat
   		@longitude = lng
 			@redis_forecast_key = "forecast:location:#{@latitude}:#{@longitude}"
 
   		if forecast_location_exists?
-        get_forecast_location
+        forecast = get_forecast_location
+        response = ForecastRuby.decode(forecast)
       else
-	  		response = get_forcast(request_url)
+	  		response = get(request_url)
 				set_forecast_location(response)
 				response
 	    end
   	end
 
+  	def get_forecast(lat, lng)
+  		data = request_forecast(lat, lng)
+  		unless data.blank?
+	  		Hashie::Mash.new(data)
+	  	end
+  	end
+
+  	def get_current_forecast(lat, lng)
+  		data = request_forecast(lat, lng)
+  		unless data.blank?
+	  		Hashie::Mash.new(data['currently'])
+	  	end
+  	end
+
+  	def get_today_forecast(lat, lng)
+			data = request_forecast(lat, lng)
+  		unless data.blank?
+	  		Hashie::Mash.new(data['hourly'])
+	  	end
+  	end
+
+  	def get_week_forecast(lat, lng)
+			data = request_forecast(lat, lng)
+  		unless data.blank?
+	  		Hashie::Mash.new(data['daily'])
+	  	end
+  	end
+
 	  private
-	  	def get_forcast(query)
-				HTTParty.get(query)
+	  	def get(query)
+				HTTParty.get(query, query: ForecastRuby.option_params)
 	  	end
 
 	  	def request_url
@@ -32,7 +61,7 @@ module ForecastRuby
 	  	end
 
 	  	def query_string
-	  		"#{ForecastRuby.api_key}/#{@latitude},#{@longitude}?units=#{ForecastRuby.units}"
+	  		"#{ForecastRuby.api_key}/#{@latitude},#{@longitude}"
 	  	end
 
 			# Redis Methods
@@ -41,8 +70,8 @@ module ForecastRuby
 			end
 
 			def set_forecast_location(response)
-				$redis.set(@redis_forecast_key, response.to_json)
-				$redis.expire(@redis_forecast_key, 14400) #in seconds = 4 hours
+				$redis.set(@redis_forecast_key, ForecastRuby.encode(response))
+				$redis.expire(@redis_forecast_key, ForecastRuby.cache_expire_time)
 			end
 
 			def get_forecast_location

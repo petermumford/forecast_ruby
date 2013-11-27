@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["peter@petermumford.com"]
   spec.description   = %q{Ruby gem for forecast.io, gets current conditions, todays and the next seven days}
   spec.summary       = %q{Ruby gem for forecast.io}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/petermumford/forecast_ruby"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -21,6 +21,7 @@ Gem::Specification.new do |spec|
   spec.required_ruby_version = '>= 1.8.7'
 
   spec.add_dependency 'httparty'
+  spec.add_dependency 'hashie'
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"
